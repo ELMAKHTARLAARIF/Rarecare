@@ -9,26 +9,46 @@ class OpenRouterController extends Controller
 {
     public function chat(Request $request)
     {
-        $message = $request->message ?? "Hello";
+        $message = $request->input('message', 'Hello');
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('OPENROUTER_API_KEY'),
-            'Content-Type' => 'application/json',
-            'HTTP-Referer' => env('APP_URL'),
-            'X-OpenRouter-Title' => env('APP_NAME'),
-        ])->post('https://openrouter.ai/api/v1/chat/completions', [
-            'model' => 'openai/gpt-5.2',
-            'max_tokens' => 512,
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => $message
+        try {
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('OPENROUTER_API_KEY'),
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => env('APP_URL'),
+                'X-OpenRouter-Title' => env('APP_NAME'),
+            ])->post('https://openrouter.ai/api/v1/chat/completions', [
+                'model' => 'openai/gpt-5.2',
+                'max_tokens' => 512,
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => $message
+                    ]
                 ]
-            ]
-        ]);
+            ]);
 
-        $data = $response->json();
+            if (!$response->successful()) {
+                return response()->json([
+                    'reply' => 'API Error: ' . $response->body()
+                ], 500);
+            }
 
-        return response()->json($data['choices'][0]['message']['content'] ?? $data);
+            $data = $response->json();
+
+            $reply = $data['choices'][0]['message']['content'] ?? 'No response from AI';
+
+            return response()->json([
+                'reply' => $reply
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'reply' => 'Server Error: ' . $e->getMessage()
+            ], 500);
+
+        }
     }
 }

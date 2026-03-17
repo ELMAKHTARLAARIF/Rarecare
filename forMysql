@@ -1,7 +1,7 @@
 1️⃣ Start Sail containers
 
 Run:
-./vendor/bin/sail up -d
+./vendor/bin/sail up -d or this alias sail up -d
 
 ✅ Step 1: Access MySQL inside container
 ./vendor/bin/sail exec mysql bash

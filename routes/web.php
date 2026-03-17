@@ -8,6 +8,8 @@ Route::apiResource('patients', PatientController::class);
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('home', function () {
+    return view('home');
+});
 
 Route::post('/chatgpt', [OpenRouterController::class, 'chat']);
-Route::view('/chat','chat');
