@@ -12,10 +12,6 @@ Route::post('/chatgpt', [OpenRouterController::class, 'chat']);
 
 Route::middleware('auth:api')->group(function () {
 
-    Route::get('/test', function () {
-        return response()->json(['message' => 'JWT works!']);
-    });
-
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
